@@ -1,0 +1,343 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HW4</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-28"><meta name="DC.source" content="HW4.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1></h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">We want to solve Ax=f where</a></li><li><a href="#2">Only need to define the prolongation operator because the restriction operator is the transpose</a></li><li><a href="#3">Multigrid Method</a></li></ul></div><h2 id="1">We want to solve Ax=f where</h2><pre class="codeinput">A = [4 -1 0 -1 0 0 0 0 0; -1 4 -1 0 -1 0 0 0 0; 0 -1 4 -1 0 -1 0 0 0;-1 0 -1 4 -1 0 -1 0 0 ;0 -1 0 -1 4 -1 0 -1 0; 0 0 -1 0 -1 4 -1 0 -1; 0 0 0 -1 0 -1 4 -1 0; 0 0 0 0 -1 0 -1 4 -1; 0 0 0 0 0 -1 0 -1 4];
+f = [0;5;-2;4;-4;4;-2;5;0];
+sz = size(A,1);
+</pre><h2 id="2">Only need to define the prolongation operator because the restriction operator is the transpose</h2><pre class="codeinput">D = eye(sz, floor(sz/2));
+E = 0.5.*D + circshift(D,1,1) + 0.5.*circshift(D,2,1);<span class="comment">%Not right, but still useful</span>
+prolongation = zeros(sz,floor(sz/2));
+<span class="keyword">for</span> h=1:floor(sz/2)
+    prolongation(:,h) = circshift(E(:,1),(h-1)*2);
+<span class="keyword">end</span>
+<span class="comment">%But for clarity, define restriction explicitly here</span>
+restriction = prolongation';
+</pre><h2 id="3">Multigrid Method</h2><pre class="codeinput">omega = 1;
+<span class="keyword">for</span> k = 2:10
+    m=0;
+    x = ones(sz,1); <span class="comment">% Take any first guess</span>
+    x_next= zeros(sz,1);
+    <span class="comment">%Relax k times, find residual r</span>
+    <span class="keyword">while</span> m&lt; k
+        <span class="keyword">for</span> j=1:sz
+            sum1=0;
+            <span class="keyword">for</span> n=1:(j-1)
+                sum1 = A(j,n).*x_next(n) + sum1;
+            <span class="keyword">end</span>
+            sum2=0;
+            <span class="keyword">for</span> n=(j+1):sz
+                sum2 = A(j,n).*x(n) + sum2;
+            <span class="keyword">end</span>
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        <span class="keyword">end</span>
+        r = f-A*x_next;<span class="comment">%residual error</span>
+        <span class="comment">% Setup for next iteration</span>
+        x = x_next;
+        m = m+1;
+    <span class="keyword">end</span>
+    <span class="comment">%Restrict problem to courser mesh using restriction</span>
+    r = restriction*r;
+    coarse_A = restriction*A*prolongation;
+
+    <span class="comment">%Solve Ae=r using Gauss-Seidal k times</span>
+    m=0;
+    e = zeros(floor(sz/2),1); <span class="comment">% Take any first guess and as long as we choose stuff correctly, it should converge.</span>
+    e_next= zeros(floor(sz/2),1);
+    <span class="comment">%Relax k times, find e</span>
+    <span class="keyword">while</span> m&lt; k
+        <span class="keyword">for</span> j=1:floor(sz/2)
+            sum1=0;
+            <span class="keyword">for</span> n=1:(j-1)
+                sum1 = coarse_A(j,n).*e_next(n) + sum1;
+            <span class="keyword">end</span>
+            sum2=0;
+            <span class="keyword">for</span> n=(j+1):floor(sz/2)
+                sum2 = coarse_A(j,n).*e(n) + sum2;
+            <span class="keyword">end</span>
+            e_next(j) = (1-omega).*e(j) + (omega/coarse_A(j,j)).*(r(j) - sum1 - sum2);
+        <span class="keyword">end</span>
+        <span class="comment">% Setup for next iteration</span>
+        e = e_next;
+        m = m+1;
+    <span class="keyword">end</span>
+    <span class="comment">%Interpolate e back to finer grid and add e to x from above</span>
+    e = prolongation*e;
+    x = x+e;
+
+    <span class="comment">%Run k more times on fine grid</span>
+    m=0;
+    x_next= zeros(sz,1);
+    <span class="keyword">while</span> m&lt; k
+        <span class="keyword">for</span> j=1:sz
+            sum1=0;
+            <span class="keyword">for</span> n=1:(j-1)
+                sum1 = A(j,n).*x_next(n) + sum1;
+            <span class="keyword">end</span>
+            sum2=0;
+            <span class="keyword">for</span> n=(j+1):sz
+                sum2 = A(j,n).*x(n) + sum2;
+            <span class="keyword">end</span>
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        <span class="keyword">end</span>
+        v = f-A*x_next;<span class="comment">%residual error</span>
+        <span class="comment">% Setup for next iteration</span>
+        x = x_next;
+        m = m+1;
+    <span class="keyword">end</span>
+    max_error = max(abs(v(:)));
+    total_GS_iterations = 3*k;
+
+<span class="comment">% Solve using GS without multigrid, using ||v|| as stopping condition</span>
+    m=0;
+    residual = ones(sz,1);
+    x = ones(sz,1); <span class="comment">% Take any first guess and as long as we choose stuff correctly, it should converge.</span>
+    x_next= zeros(sz,1);
+    <span class="keyword">while</span> norm(residual)&gt;norm(v)
+        <span class="keyword">for</span> j=1:sz
+            sum1=0;
+            <span class="keyword">for</span> n=1:(j-1)
+                sum1 = A(j,n).*x_next(n) + sum1;
+            <span class="keyword">end</span>
+            sum2=0;
+            <span class="keyword">for</span> n=(j+1):sz
+                sum2 = A(j,n).*x(n) + sum2;
+            <span class="keyword">end</span>
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        <span class="keyword">end</span>
+        residual = f-A*x_next;<span class="comment">%residual error</span>
+        <span class="comment">% Setup for next iteration</span>
+        x = x_next;
+        m = m+1;
+    <span class="keyword">end</span>
+    plain_GS_iterations = m; <span class="comment">%the number of gauss-seidal iterations to achieve same accuracy as multigrid</span>
+    fprintf(<span class="string">'k = %d\nmax error = %.9f\ntotal GS iterations = %d\nsame-accuracy GS iterations = %d \n\n'</span>,k,max_error,total_GS_iterations,plain_GS_iterations)
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">k = 2
+max error = 0.030571529
+total GS iterations = 6
+same-accuracy GS iterations = 9 
+
+k = 3
+max error = 0.007445360
+total GS iterations = 9
+same-accuracy GS iterations = 12 
+
+k = 4
+max error = 0.001985904
+total GS iterations = 12
+same-accuracy GS iterations = 15 
+
+k = 5
+max error = 0.000727656
+total GS iterations = 15
+same-accuracy GS iterations = 18 
+
+k = 6
+max error = 0.000296859
+total GS iterations = 18
+same-accuracy GS iterations = 20 
+
+k = 7
+max error = 0.000128091
+total GS iterations = 21
+same-accuracy GS iterations = 22 
+
+k = 8
+max error = 0.000057016
+total GS iterations = 24
+same-accuracy GS iterations = 24 
+
+k = 9
+max error = 0.000025759
+total GS iterations = 27
+same-accuracy GS iterations = 26 
+
+k = 10
+max error = 0.000011708
+total GS iterations = 30
+same-accuracy GS iterations = 28 
+
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%% We want to solve Ax=f where
+A = [4 -1 0 -1 0 0 0 0 0; -1 4 -1 0 -1 0 0 0 0; 0 -1 4 -1 0 -1 0 0 0;-1 0 -1 4 -1 0 -1 0 0 ;0 -1 0 -1 4 -1 0 -1 0; 0 0 -1 0 -1 4 -1 0 -1; 0 0 0 -1 0 -1 4 -1 0; 0 0 0 0 -1 0 -1 4 -1; 0 0 0 0 0 -1 0 -1 4];
+f = [0;5;-2;4;-4;4;-2;5;0];
+sz = size(A,1);
+
+%% Only need to define the prolongation operator because the restriction operator is the transpose
+D = eye(sz, floor(sz/2));
+E = 0.5.*D + circshift(D,1,1) + 0.5.*circshift(D,2,1);%Not right, but still useful
+prolongation = zeros(sz,floor(sz/2));
+for h=1:floor(sz/2)
+    prolongation(:,h) = circshift(E(:,1),(h-1)*2);
+end
+%But for clarity, define restriction explicitly here
+restriction = prolongation';
+%% Multigrid Method
+omega = 1;
+for k = 2:10
+    m=0;
+    x = ones(sz,1); % Take any first guess
+    x_next= zeros(sz,1);
+    %Relax k times, find residual r
+    while m< k
+        for j=1:sz
+            sum1=0;
+            for n=1:(j-1)
+                sum1 = A(j,n).*x_next(n) + sum1;
+            end
+            sum2=0;
+            for n=(j+1):sz
+                sum2 = A(j,n).*x(n) + sum2;
+            end
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        end
+        r = f-A*x_next;%residual error
+        % Setup for next iteration
+        x = x_next;
+        m = m+1;
+    end
+    %Restrict problem to courser mesh using restriction
+    r = restriction*r;
+    coarse_A = restriction*A*prolongation;
+    
+    %Solve Ae=r using Gauss-Seidal k times
+    m=0;
+    e = zeros(floor(sz/2),1); % Take any first guess and as long as we choose stuff correctly, it should converge.
+    e_next= zeros(floor(sz/2),1);
+    %Relax k times, find e
+    while m< k
+        for j=1:floor(sz/2)
+            sum1=0;
+            for n=1:(j-1)
+                sum1 = coarse_A(j,n).*e_next(n) + sum1;
+            end
+            sum2=0;
+            for n=(j+1):floor(sz/2)
+                sum2 = coarse_A(j,n).*e(n) + sum2;
+            end
+            e_next(j) = (1-omega).*e(j) + (omega/coarse_A(j,j)).*(r(j) - sum1 - sum2);
+        end
+        % Setup for next iteration
+        e = e_next;
+        m = m+1;
+    end
+    %Interpolate e back to finer grid and add e to x from above
+    e = prolongation*e;
+    x = x+e;
+    
+    %Run k more times on fine grid
+    m=0;
+    x_next= zeros(sz,1);
+    while m< k
+        for j=1:sz
+            sum1=0;
+            for n=1:(j-1)
+                sum1 = A(j,n).*x_next(n) + sum1;
+            end
+            sum2=0;
+            for n=(j+1):sz
+                sum2 = A(j,n).*x(n) + sum2;
+            end
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        end
+        v = f-A*x_next;%residual error
+        % Setup for next iteration
+        x = x_next;
+        m = m+1;
+    end
+    max_error = max(abs(v(:)));
+    total_GS_iterations = 3*k;
+    
+% Solve using GS without multigrid, using ||v|| as stopping condition
+    m=0;
+    residual = ones(sz,1);
+    x = ones(sz,1); % Take any first guess and as long as we choose stuff correctly, it should converge.
+    x_next= zeros(sz,1);
+    while norm(residual)>norm(v)
+        for j=1:sz
+            sum1=0;
+            for n=1:(j-1)
+                sum1 = A(j,n).*x_next(n) + sum1;
+            end
+            sum2=0;
+            for n=(j+1):sz
+                sum2 = A(j,n).*x(n) + sum2;
+            end
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        end
+        residual = f-A*x_next;%residual error
+        % Setup for next iteration
+        x = x_next;
+        m = m+1;
+    end
+    plain_GS_iterations = m; %the number of gauss-seidal iterations to achieve same accuracy as multigrid
+    fprintf('k = %d\nmax error = %.9f\ntotal GS iterations = %d\nsame-accuracy GS iterations = %d \n\n',k,max_error,total_GS_iterations,plain_GS_iterations)
+end
+##### SOURCE END #####
+--></body></html>

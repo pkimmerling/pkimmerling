@@ -1,0 +1,485 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HW2Version2</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-16"><meta name="DC.source" content="HW2Version2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1></h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">We want to solve Ax=f where</a></li><li><a href="#2">Gauss-Seidal Method</a></li><li><a href="#3">SOR Method</a></li><li><a href="#4">Check</a></li></ul></div><h2 id="1">We want to solve Ax=f where</h2><pre class="codeinput"><span class="comment">%A = [2.0 2.5 2.0 1.0 2.5 1.5; 2.5 3.0 2.0 2.0 2.5 2.5; 2.0 2.0 2.0 2.0 1.5 1.5; 1.0 2.0 2.0 2.0 2.0 3.0; 2.5 2.5 1.5 2.0 1.0 2.5; 1.5 2.5 1.5 3.0 2.5 1.0]</span>
+<span class="comment">%f = [21;32;23;21;25;24]</span>
+<span class="comment">% for n=1:sz</span>
+<span class="comment">%     A(n,n) = 100*A(n,n);</span>
+<span class="comment">% end</span>
+
+A = [4 -1 0 -1 0 0 0 0 0; -1 4 -1 0 -1 0 0 0 0; 0 -1 4 -1 0 -1 0 0 0;-1 0 -1 4 -1 0 -1 0 0 ;0 -1 0 -1 4 -1 0 -1 0; 0 0 -1 0 -1 4 -1 0 -1; 0 0 0 -1 0 -1 4 -1 0; 0 0 0 0 -1 0 -1 4 -1; 0 0 0 0 0 -1 0 -1 4]
+f = [0;5;-2;4;-4;4;-2;5;0]
+sz = size(A,1);
+</pre><h2 id="2">Gauss-Seidal Method</h2><pre class="codeinput">fprintf(<span class="string">'Gauss-Seidal Method\n\n\n'</span>)
+omega = 1
+<span class="keyword">for</span> i = 1:4
+    m=0;
+    stopping_criterion = 1;
+    x = ones(sz,1); <span class="comment">% Take any first guess and as long as we choose stuff correctly, it should converge.</span>
+    x_next= zeros(sz,1);
+    <span class="keyword">while</span> stopping_criterion&gt;0.00001
+        <span class="keyword">for</span> j=1:sz
+            sum1=0;
+            <span class="keyword">for</span> k=1:(j-1)
+                sum1 = A(j,k).*x_next(k) + sum1;
+            <span class="keyword">end</span>
+            sum2=0;
+            <span class="keyword">for</span> k=(j+1):sz
+                sum2 = A(j,k).*x(k) + sum2;
+            <span class="keyword">end</span>
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        <span class="keyword">end</span>
+        <span class="comment">% Computing stopping criteria</span>
+        diff = x_next - x;
+        res = f-A*x_next;
+        <span class="keyword">if</span> i==1
+            stopping_criterion = norm(diff);
+        <span class="keyword">elseif</span> i==2
+            stopping_criterion = norm(diff,Inf);
+        <span class="keyword">elseif</span> i==3
+            stopping_criterion = norm(res);
+        <span class="keyword">elseif</span> i==4
+            stopping_criterion = norm(res,Inf);
+        <span class="keyword">end</span>
+        <span class="comment">% Setup for next iteration</span>
+        x = x_next;
+        m = m+1;
+    <span class="keyword">end</span>
+    x
+    <span class="keyword">if</span> i==1
+        fprintf(<span class="string">'Difference in 2-norm = %.6e\nIteration number m = %d\n\n'</span>, stopping_criterion,m)
+    <span class="keyword">elseif</span> i==2
+        fprintf(<span class="string">'Difference in Sup-norm = %.6e\nIteration number m = %d\n\n'</span>,stopping_criterion,m)
+    <span class="keyword">elseif</span> i==3
+        fprintf(<span class="string">'Residual in 2-norm = %.6e\nIteration number m = %d\n\n'</span>,stopping_criterion,m)
+    <span class="keyword">elseif</span> i==4
+        fprintf(<span class="string">'Residual in Sup-norm = %.6e\nIteration number m = %d\n\n'</span>,stopping_criterion,m)
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2 id="3">SOR Method</h2><p>Need to compute Jacobi iteration matrix to calculate omega</p><pre class="codeinput">fprintf(<span class="string">'SOR METHOD\n\n\n'</span>)
+D = zeros(sz);
+Dinv = zeros(sz);
+<span class="keyword">for</span> i=1:sz
+    D(i,i) = A(i,i);
+    Dinv(i,i) = 1/D(i,i);
+<span class="keyword">end</span>
+offdiagA = D-A;
+R_J = Dinv*offdiagA;
+rho = max(abs(eig(R_J)));<span class="comment">% Spectral radius of Jacobi iteration matrix, calculated just above</span>
+omega = 2/(1+sqrt(1-rho^2))<span class="comment">% Theoretical optimal value for omega</span>
+<span class="keyword">for</span> i = 1:4
+    m=0;
+    stopping_criterion = 1;
+    x = ones(sz,1); <span class="comment">% Take any first guess and as long as we choose stuff correctly, it should converge.</span>
+    x_next= zeros(sz,1);
+    <span class="keyword">while</span> (stopping_criterion&gt;0.00001)
+        <span class="keyword">for</span> j=1:sz
+            sum1=0;
+            <span class="keyword">for</span> k=1:(j-1)
+                sum1 = A(j,k).*x_next(k) + sum1;
+            <span class="keyword">end</span>
+            sum2=0;
+            <span class="keyword">for</span> k=(j+1):sz
+                sum2 = A(j,k).*x(k) + sum2;
+            <span class="keyword">end</span>
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        <span class="keyword">end</span>
+        <span class="comment">% Computing stopping criteria</span>
+        diff = x_next - x;
+        res = f-A*x_next;
+        <span class="keyword">if</span> i==1
+            stopping_criterion = norm(diff);
+        <span class="keyword">elseif</span> i==2
+            stopping_criterion = norm(diff,Inf);
+        <span class="keyword">elseif</span> i==3
+            stopping_criterion = norm(res);
+        <span class="keyword">elseif</span> i==4
+            stopping_criterion = norm(res,Inf);
+        <span class="keyword">end</span>
+        <span class="comment">% Setup for next iteration</span>
+        x = x_next;
+        m = m+1;
+    <span class="keyword">end</span>
+    x
+    <span class="keyword">if</span> i==1
+        fprintf(<span class="string">'Difference in 2-norm = %.6e\nIteration number m = %d\n\n'</span>, stopping_criterion,m)
+    <span class="keyword">elseif</span> i==2
+        fprintf(<span class="string">'Difference in Sup-norm = %.6e\nIteration number m = %d\n\n'</span>,stopping_criterion,m)
+    <span class="keyword">elseif</span> i==3
+        fprintf(<span class="string">'Residual in 2-norm = %.6e\nIteration number m = %d\n\n'</span>,stopping_criterion,m)
+    <span class="keyword">elseif</span> i==4
+        fprintf(<span class="string">'Residual in Sup-norm = %.6e\nIteration number m = %d\n\n'</span>,stopping_criterion,m)
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2 id="4">Check</h2><p>As we see, they agree on what x is so we just need to verify that Ax=f: But we'll have to round off x because it's not exact beyond 5 decimal places</p><pre class="codeinput"><span class="keyword">if</span> A*round(x) == f
+    disp(<span class="string">'Ax=f'</span>)
+<span class="keyword">else</span>
+    disp(<span class="string">'Ax=/=f'</span>)
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">
+A =
+
+     4    -1     0    -1     0     0     0     0     0
+    -1     4    -1     0    -1     0     0     0     0
+     0    -1     4    -1     0    -1     0     0     0
+    -1     0    -1     4    -1     0    -1     0     0
+     0    -1     0    -1     4    -1     0    -1     0
+     0     0    -1     0    -1     4    -1     0    -1
+     0     0     0    -1     0    -1     4    -1     0
+     0     0     0     0    -1     0    -1     4    -1
+     0     0     0     0     0    -1     0    -1     4
+
+
+f =
+
+     0
+     5
+    -2
+     4
+    -4
+     4
+    -2
+     5
+     0
+
+Gauss-Seidal Method
+
+
+
+omega =
+
+     1
+
+
+x =
+
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+
+Difference in 2-norm = 8.595783e-06
+Iteration number m = 29
+
+
+x =
+
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+
+Difference in Sup-norm = 8.020563e-06
+Iteration number m = 27
+
+
+x =
+
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+
+Residual in 2-norm = 9.986980e-06
+Iteration number m = 30
+
+
+x =
+
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+
+Residual in Sup-norm = 6.846506e-06
+Iteration number m = 29
+
+SOR METHOD
+
+
+
+omega =
+
+    1.2703
+
+
+x =
+
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+
+Difference in 2-norm = 5.941036e-06
+Iteration number m = 15
+
+
+x =
+
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+
+Difference in Sup-norm = 9.852943e-06
+Iteration number m = 14
+
+
+x =
+
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+
+Residual in 2-norm = 6.071105e-06
+Iteration number m = 15
+
+
+x =
+
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+    2.0000
+    1.0000
+
+Residual in Sup-norm = 4.966900e-06
+Iteration number m = 15
+
+Ax=f
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%% We want to solve Ax=f where
+
+%A = [2.0 2.5 2.0 1.0 2.5 1.5; 2.5 3.0 2.0 2.0 2.5 2.5; 2.0 2.0 2.0 2.0 1.5 1.5; 1.0 2.0 2.0 2.0 2.0 3.0; 2.5 2.5 1.5 2.0 1.0 2.5; 1.5 2.5 1.5 3.0 2.5 1.0]
+%f = [21;32;23;21;25;24]
+% for n=1:sz
+%     A(n,n) = 100*A(n,n);
+% end
+
+A = [4 -1 0 -1 0 0 0 0 0; -1 4 -1 0 -1 0 0 0 0; 0 -1 4 -1 0 -1 0 0 0;-1 0 -1 4 -1 0 -1 0 0 ;0 -1 0 -1 4 -1 0 -1 0; 0 0 -1 0 -1 4 -1 0 -1; 0 0 0 -1 0 -1 4 -1 0; 0 0 0 0 -1 0 -1 4 -1; 0 0 0 0 0 -1 0 -1 4]
+f = [0;5;-2;4;-4;4;-2;5;0]
+sz = size(A,1);
+
+%%% Gauss-Seidal Method
+fprintf('Gauss-Seidal Method\n\n\n')
+omega = 1
+for i = 1:4
+    m=0;
+    stopping_criterion = 1;
+    x = ones(sz,1); % Take any first guess and as long as we choose stuff correctly, it should converge.
+    x_next= zeros(sz,1);
+    while stopping_criterion>0.00001
+        for j=1:sz
+            sum1=0;
+            for k=1:(j-1)
+                sum1 = A(j,k).*x_next(k) + sum1;
+            end
+            sum2=0;
+            for k=(j+1):sz
+                sum2 = A(j,k).*x(k) + sum2;
+            end
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        end
+        % Computing stopping criteria
+        diff = x_next - x;
+        res = f-A*x_next;
+        if i==1
+            stopping_criterion = norm(diff);
+        elseif i==2
+            stopping_criterion = norm(diff,Inf);
+        elseif i==3
+            stopping_criterion = norm(res);
+        elseif i==4
+            stopping_criterion = norm(res,Inf);
+        end
+        % Setup for next iteration
+        x = x_next;
+        m = m+1;
+    end
+    x
+    if i==1
+        fprintf('Difference in 2-norm = %.6e\nIteration number m = %d\n\n', stopping_criterion,m)
+    elseif i==2
+        fprintf('Difference in Sup-norm = %.6e\nIteration number m = %d\n\n',stopping_criterion,m)
+    elseif i==3
+        fprintf('Residual in 2-norm = %.6e\nIteration number m = %d\n\n',stopping_criterion,m)
+    elseif i==4
+        fprintf('Residual in Sup-norm = %.6e\nIteration number m = %d\n\n',stopping_criterion,m)
+    end
+end
+
+%%% SOR Method
+% Need to compute Jacobi iteration matrix to calculate omega
+fprintf('SOR METHOD\n\n\n')
+D = zeros(sz);
+Dinv = zeros(sz);
+for i=1:sz
+    D(i,i) = A(i,i);
+    Dinv(i,i) = 1/D(i,i);
+end
+offdiagA = D-A;
+R_J = Dinv*offdiagA;
+rho = max(abs(eig(R_J)));% Spectral radius of Jacobi iteration matrix, calculated just above
+omega = 2/(1+sqrt(1-rho^2))% Theoretical optimal value for omega
+for i = 1:4
+    m=0;
+    stopping_criterion = 1;
+    x = ones(sz,1); % Take any first guess and as long as we choose stuff correctly, it should converge.
+    x_next= zeros(sz,1);
+    while (stopping_criterion>0.00001)
+        for j=1:sz
+            sum1=0;
+            for k=1:(j-1)
+                sum1 = A(j,k).*x_next(k) + sum1;
+            end
+            sum2=0;
+            for k=(j+1):sz
+                sum2 = A(j,k).*x(k) + sum2;
+            end
+            x_next(j) = (1-omega).*x(j) + (omega/A(j,j)).*(f(j) - sum1 - sum2);
+        end
+        % Computing stopping criteria
+        diff = x_next - x;
+        res = f-A*x_next;
+        if i==1
+            stopping_criterion = norm(diff);
+        elseif i==2
+            stopping_criterion = norm(diff,Inf);
+        elseif i==3
+            stopping_criterion = norm(res);
+        elseif i==4
+            stopping_criterion = norm(res,Inf);
+        end
+        % Setup for next iteration
+        x = x_next;
+        m = m+1;
+    end
+    x
+    if i==1
+        fprintf('Difference in 2-norm = %.6e\nIteration number m = %d\n\n', stopping_criterion,m)
+    elseif i==2
+        fprintf('Difference in Sup-norm = %.6e\nIteration number m = %d\n\n',stopping_criterion,m)
+    elseif i==3
+        fprintf('Residual in 2-norm = %.6e\nIteration number m = %d\n\n',stopping_criterion,m)
+    elseif i==4
+        fprintf('Residual in Sup-norm = %.6e\nIteration number m = %d\n\n',stopping_criterion,m)
+    end
+end
+%%% Check
+% As we see, they agree on what x is so we just need to verify that Ax=f:
+% But we'll have to round off x because it's not exact beyond 5 decimal
+% places
+
+if A*round(x) == f
+    disp('Ax=f')
+else
+    disp('Ax=/=f')
+end
+##### SOURCE END #####
+--></body></html>

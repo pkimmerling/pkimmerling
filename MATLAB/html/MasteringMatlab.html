@@ -1,0 +1,696 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>MasteringMatlab</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-02-18"><meta name="DC.source" content="MasteringMatlab.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Let's first define an identity matrix of size n</a></li><li><a href="#2">Say we had a two matrices and we wanted to compare them</a></li><li><a href="#3">So you wanna talk about eigen-things</a></li><li><a href="#4">Singular Value Decomposition</a></li><li><a href="#5">QR Decomposition</a></li><li><a href="#6">Galleries for testing</a></li></ul></div><h2 id="1">Let's first define an identity matrix of size n</h2><pre class="codeinput">n = 4; <span class="comment">%If I don't want something to print, put a semi-colon to end the line</span>
+I = eye(n)
+
+<span class="comment">%We can also generate a matrix of zeros or a matrix of ones</span>
+Z = zeros(n)
+O = ones(n)
+
+<span class="comment">%Both of these take second input arguments if you need non-square matrices</span>
+m=3;
+delta = eye(n,m)
+z = zeros(n,m)
+o = ones(n,m)
+
+<span class="comment">%One way to initialize a matrix is to start out with one of these and use a</span>
+<span class="comment">%loop to populate it iteratively.</span>
+A = ones(n)
+<span class="keyword">for</span> i=1:n
+    A(i,:) = i+1; <span class="comment">%this performs the same action on all of the elements of the i-th row</span>
+    A(:,i) = i^2; <span class="comment">%this performs the same action on all of the elements of the i-th column</span>
+    A(i,i) = A(1,3); <span class="comment">%we can also self-reference</span>
+<span class="keyword">end</span>
+A  <span class="comment">%Simply typing a variable will print it out</span>
+B = rand(n) <span class="comment">% will generate a nxn matrix with random entries between 0 and 1</span>
+C = randi(n) <span class="comment">%generates a random integer between 1 and n</span>
+D = randi(m,n) <span class="comment">%generates an nxn matrix with random integers entries between 1 and m</span>
+E = [1 2;3 4;5 6] <span class="comment">%lastly we could simply type it out.Use spaces to separate entries, semi-colons rows.</span>
+</pre><pre class="codeoutput">
+I =
+
+     1     0     0     0
+     0     1     0     0
+     0     0     1     0
+     0     0     0     1
+
+
+Z =
+
+     0     0     0     0
+     0     0     0     0
+     0     0     0     0
+     0     0     0     0
+
+
+O =
+
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+
+
+delta =
+
+     1     0     0
+     0     1     0
+     0     0     1
+     0     0     0
+
+
+z =
+
+     0     0     0
+     0     0     0
+     0     0     0
+     0     0     0
+
+
+o =
+
+     1     1     1
+     1     1     1
+     1     1     1
+     1     1     1
+
+
+A =
+
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+
+
+A =
+
+     2     4     9    16
+     3     2     9    16
+     4     4     9    16
+     5     5     5     9
+
+
+B =
+
+    0.8311    0.9322    0.5827    0.4077
+    0.1565    0.8351    0.8549    0.0364
+    0.4573    0.8954    0.0349    0.7461
+    0.6181    0.5825    0.8854    0.1548
+
+
+C =
+
+     1
+
+
+D =
+
+     2     2     1     1
+     1     2     1     3
+     1     2     1     3
+     2     1     3     3
+
+
+E =
+
+     1     2
+     3     4
+     5     6
+
+</pre><h2 id="2">Say we had a two matrices and we wanted to compare them</h2><pre class="codeinput">A = ones(n)
+B = rand(n)
+A == B <span class="comment">%Because none of the entries match, the logical array contains only zeros.</span>
+<span class="comment">%If they did match, it would contain 1's in those entries. Sizes do need to match.</span>
+
+<span class="comment">%Definitely want basic matrix operations:</span>
+sum = A+B
+prod = A*B
+power = A^m
+
+<span class="comment">%If we want to perform entry-wise operations we do .(operation):</span>
+(0.5).*A
+A.^m
+A.*B
+
+<span class="comment">%If you want conjugate transpose, it's ' but if you only want transpose, it's .'</span>
+A'
+
+<span class="comment">%If you want the inverse of a matrix</span>
+A_inv = inv(A)
+<span class="comment">%BUT if you're trying to solve Ax=b, better to use x = b\A</span>
+b = [1;2;3;4]
+x = b\A
+</pre><pre class="codeoutput">
+A =
+
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+
+
+B =
+
+    0.8280    0.3253    0.2630    0.3846
+    0.2934    0.8318    0.6806    0.5386
+    0.3094    0.8103    0.2337    0.9917
+    0.5230    0.5570    0.4564    0.7552
+
+
+ans =
+
+  4&times;4 logical array
+
+   0   0   0   0
+   0   0   0   0
+   0   0   0   0
+   0   0   0   0
+
+
+sum =
+
+    1.8280    1.3253    1.2630    1.3846
+    1.2934    1.8318    1.6806    1.5386
+    1.3094    1.8103    1.2337    1.9917
+    1.5230    1.5570    1.4564    1.7552
+
+
+prod =
+
+    1.9537    2.5244    1.6336    2.6701
+    1.9537    2.5244    1.6336    2.6701
+    1.9537    2.5244    1.6336    2.6701
+    1.9537    2.5244    1.6336    2.6701
+
+
+power =
+
+    16    16    16    16
+    16    16    16    16
+    16    16    16    16
+    16    16    16    16
+
+
+ans =
+
+    0.5000    0.5000    0.5000    0.5000
+    0.5000    0.5000    0.5000    0.5000
+    0.5000    0.5000    0.5000    0.5000
+    0.5000    0.5000    0.5000    0.5000
+
+
+ans =
+
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+
+
+ans =
+
+    0.8280    0.3253    0.2630    0.3846
+    0.2934    0.8318    0.6806    0.5386
+    0.3094    0.8103    0.2337    0.9917
+    0.5230    0.5570    0.4564    0.7552
+
+
+ans =
+
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+     1     1     1     1
+
+Warning: Matrix is singular to working precision. 
+
+A_inv =
+
+   Inf   Inf   Inf   Inf
+   Inf   Inf   Inf   Inf
+   Inf   Inf   Inf   Inf
+   Inf   Inf   Inf   Inf
+
+
+b =
+
+     1
+     2
+     3
+     4
+
+
+x =
+
+    0.3333    0.3333    0.3333    0.3333
+
+</pre><h2 id="3">So you wanna talk about eigen-things</h2><pre class="codeinput">A = [1 2;3 4] <span class="comment">%Use A = [1 2;3 4] to show that errors kick in.</span>
+e = eig(A) <span class="comment">%Just gives a vector containing the eigenvalues</span>
+[evectors,evalues] = eig(A) <span class="comment">% produces both, with eigenvalues in a diagonal matrix</span>
+<span class="comment">%Check</span>
+A*evectors(:,1) == evectors(:,1)*evalues(1,1) <span class="comment">%Errors abound, so be careful</span>
+
+<span class="comment">%To actually check, check norm of difference:</span>
+norm(A*evectors(:,1)-evectors(:,1)*evalues(1,1))<span class="comment">%Pretty small, basically at machine precision</span>
+
+<span class="comment">% Characteristic polynomial</span>
+syms <span class="string">x</span>;
+p = charpoly(A,x)
+factor(p) <span class="comment">%can't be factored over the rationals</span>
+
+rank(A)<span class="comment">%full rank</span>
+</pre><pre class="codeoutput">
+A =
+
+     1     2
+     3     4
+
+
+e =
+
+   -0.3723
+    5.3723
+
+
+evectors =
+
+   -0.8246   -0.4160
+    0.5658   -0.9094
+
+
+evalues =
+
+   -0.3723         0
+         0    5.3723
+
+
+ans =
+
+  2&times;1 logical array
+
+   1
+   0
+
+
+ans =
+
+   5.5511e-17
+
+ 
+p =
+ 
+x^2 - 5*x - 2
+ 
+ 
+ans =
+ 
+x^2 - 5*x - 2
+ 
+
+ans =
+
+     2
+
+</pre><h2 id="4">Singular Value Decomposition</h2><pre class="codeinput">A = ones(n);
+<span class="keyword">for</span> i=1:n
+    A(i,:) = i+1; <span class="comment">%this performs the same action on all of the elements of the i-th row</span>
+    A(:,i) = i^2; <span class="comment">%this performs the same action on all of the elements of the i-th column</span>
+    A(i,i) = A(1,3); <span class="comment">%we can also self-reference</span>
+<span class="keyword">end</span>
+A
+s = svd(A)<span class="comment">%Just grabs the singular values</span>
+[U,S,V] = svd(A) <span class="comment">%S will be diagonal, U and V will be unitary</span>
+norm(A - U*S*V') <span class="comment">%darn small</span>
+norm(A-U*S*V)<span class="comment">%not small, require the transpose of V</span>
+
+<span class="comment">%When trying to solve a linear system, it's important to know if the matrix</span>
+<span class="comment">%A is ill-conditioned or not. You can call</span>
+<span class="comment">%The coefficient matrix is called ill-conditioned if a small change in the</span>
+<span class="comment">%constant coefficients results in a large change in the solution.</span>
+dA = decomposition(A)
+tf = isIllConditioned(dA) <span class="comment">%not ill conditioned, could solve Ax=b without issue</span>
+
+<span class="comment">%Also works on rectangular matrices</span>
+E = [1 2;3 4;5 6]
+[U1,S1,V1] = svd(E)
+</pre><pre class="codeoutput">
+A =
+
+     2     4     9    16
+     3     2     9    16
+     4     4     9    16
+     5     5     5     9
+
+
+s =
+
+   34.7868
+    4.4194
+    1.5317
+    0.0170
+
+
+U =
+
+   -0.5412   -0.2433    0.7757    0.2149
+   -0.5348   -0.3895   -0.6144    0.4298
+   -0.5521    0.0689   -0.1365   -0.8196
+   -0.3410    0.8856   -0.0465    0.3118
+
+
+S =
+
+   34.7868         0         0         0
+         0    4.4194         0         0
+         0         0    1.5317         0
+         0         0         0    0.0170
+
+
+V =
+
+   -0.1897    0.6898   -0.6986   -0.0088
+   -0.2055    0.6678    0.7153   -0.0062
+   -0.4702   -0.1464   -0.0059   -0.8703
+   -0.8371   -0.2380   -0.0139    0.4924
+
+
+ans =
+
+   2.9889e-14
+
+
+ans =
+
+   43.2047
+
+
+dA = 
+
+  decomposition with properties:
+
+    MatrixSize: [4 4]
+          Type: 'lu'
+
+  Show &lt;a href="matlab:if exist('dA','var'),displayAllProperties(dA),else,disp('Unable to display properties for variable dA because it no longer exists.');end"&gt;all properties&lt;/a&gt;
+
+
+tf =
+
+  logical
+
+   0
+
+
+E =
+
+     1     2
+     3     4
+     5     6
+
+
+U1 =
+
+   -0.2298    0.8835    0.4082
+   -0.5247    0.2408   -0.8165
+   -0.8196   -0.4019    0.4082
+
+
+S1 =
+
+    9.5255         0
+         0    0.5143
+         0         0
+
+
+V1 =
+
+   -0.6196   -0.7849
+   -0.7849    0.6196
+
+</pre><h2 id="5">QR Decomposition</h2><pre class="codeinput">A = ones(n);
+<span class="keyword">for</span> i=1:n
+    A(i,:) = i+1;
+    A(:,i) = i^2;
+    A(i,i) = A(1,3);
+<span class="keyword">end</span>
+A
+[Q,R] = qr(A) <span class="comment">%Q is orthogonal, R will be upper triangular</span>
+norm(Q*R - A) <span class="comment">%Pretty darn small, good enough</span>
+
+<span class="comment">%Also works on rectangular matrices</span>
+E = [1 2;3 4;5 6]
+[Q1,R1] = qr(E)
+</pre><pre class="codeoutput">
+A =
+
+     2     4     9    16
+     3     2     9    16
+     4     4     9    16
+     5     5     5     9
+
+
+Q =
+
+   -0.2722    0.8795    0.3255    0.2156
+   -0.4082   -0.4729    0.6510    0.4312
+   -0.5443   -0.0332    0.1772   -0.8193
+   -0.6804   -0.0415   -0.6625    0.3105
+
+
+R =
+
+   -7.3485   -7.4846  -14.4248  -25.7196
+         0    2.2319    3.1529    5.6006
+         0         0    7.0700   12.4953
+         0         0         0    0.0345
+
+
+ans =
+
+   2.0256e-14
+
+
+E =
+
+     1     2
+     3     4
+     5     6
+
+
+Q1 =
+
+   -0.1690    0.8971    0.4082
+   -0.5071    0.2760   -0.8165
+   -0.8452   -0.3450    0.4082
+
+
+R1 =
+
+   -5.9161   -7.4374
+         0    0.8281
+         0         0
+
+</pre><h2 id="6">Galleries for testing</h2><pre class="codeinput"><span class="comment">%Sometimes we desire to test something on a bunch of matrices of a certain</span>
+<span class="comment">%type. the gallery() function can do this</span>
+
+A1 = gallery(<span class="string">'jordbloc'</span>, 3, 2)<span class="comment">%So I can generate Jordan Blocks and then insert them if needed.</span>
+A2 = gallery(<span class="string">'minij'</span>,n)<span class="comment">%I can also generate a symmetric positive definite matrix</span>
+</pre><pre class="codeoutput">
+A1 =
+
+     2     1     0
+     0     2     1
+     0     0     2
+
+
+A2 =
+
+     1     1     1     1
+     1     2     2     2
+     1     2     3     3
+     1     2     3     4
+
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Let's first define an identity matrix of size n
+n = 4; %If I don't want something to print, put a semi-colon to end the line
+I = eye(n)
+
+%We can also generate a matrix of zeros or a matrix of ones
+Z = zeros(n)
+O = ones(n)
+
+%Both of these take second input arguments if you need non-square matrices
+m=3;
+delta = eye(n,m)
+z = zeros(n,m)
+o = ones(n,m)
+
+%One way to initialize a matrix is to start out with one of these and use a
+%loop to populate it iteratively.
+A = ones(n)
+for i=1:n
+    A(i,:) = i+1; %this performs the same action on all of the elements of the i-th row
+    A(:,i) = i^2; %this performs the same action on all of the elements of the i-th column
+    A(i,i) = A(1,3); %we can also self-reference
+end
+A  %Simply typing a variable will print it out
+B = rand(n) % will generate a nxn matrix with random entries between 0 and 1
+C = randi(n) %generates a random integer between 1 and n
+D = randi(m,n) %generates an nxn matrix with random integers entries between 1 and m
+E = [1 2;3 4;5 6] %lastly we could simply type it out.Use spaces to separate entries, semi-colons rows.
+
+%% Say we had a two matrices and we wanted to compare them
+A = ones(n)
+B = rand(n)
+A == B %Because none of the entries match, the logical array contains only zeros. 
+%If they did match, it would contain 1's in those entries. Sizes do need to match.
+
+%Definitely want basic matrix operations:
+sum = A+B
+prod = A*B
+power = A^m
+
+%If we want to perform entry-wise operations we do .(operation):
+(0.5).*A
+A.^m
+A.*B
+
+%If you want conjugate transpose, it's ' but if you only want transpose, it's .'
+A'
+
+%If you want the inverse of a matrix
+A_inv = inv(A)
+%BUT if you're trying to solve Ax=b, better to use x = b\A
+b = [1;2;3;4]
+x = b\A
+
+%% So you wanna talk about eigen-things
+A = [1 2;3 4] %Use A = [1 2;3 4] to show that errors kick in.
+e = eig(A) %Just gives a vector containing the eigenvalues
+[evectors,evalues] = eig(A) % produces both, with eigenvalues in a diagonal matrix
+%Check
+A*evectors(:,1) == evectors(:,1)*evalues(1,1) %Errors abound, so be careful
+
+%To actually check, check norm of difference:
+norm(A*evectors(:,1)-evectors(:,1)*evalues(1,1))%Pretty small, basically at machine precision
+
+% Characteristic polynomial
+syms x;
+p = charpoly(A,x)
+factor(p) %can't be factored over the rationals
+
+rank(A)%full rank
+%% Singular Value Decomposition
+
+A = ones(n);
+for i=1:n
+    A(i,:) = i+1; %this performs the same action on all of the elements of the i-th row
+    A(:,i) = i^2; %this performs the same action on all of the elements of the i-th column
+    A(i,i) = A(1,3); %we can also self-reference
+end
+A
+s = svd(A)%Just grabs the singular values
+[U,S,V] = svd(A) %S will be diagonal, U and V will be unitary
+norm(A - U*S*V') %darn small
+norm(A-U*S*V)%not small, require the transpose of V
+
+%When trying to solve a linear system, it's important to know if the matrix
+%A is ill-conditioned or not. You can call
+%The coefficient matrix is called ill-conditioned if a small change in the
+%constant coefficients results in a large change in the solution.
+dA = decomposition(A)
+tf = isIllConditioned(dA) %not ill conditioned, could solve Ax=b without issue
+
+%Also works on rectangular matrices
+E = [1 2;3 4;5 6]
+[U1,S1,V1] = svd(E)
+%% QR Decomposition
+A = ones(n);
+for i=1:n
+    A(i,:) = i+1; 
+    A(:,i) = i^2; 
+    A(i,i) = A(1,3); 
+end
+A
+[Q,R] = qr(A) %Q is orthogonal, R will be upper triangular
+norm(Q*R - A) %Pretty darn small, good enough
+
+%Also works on rectangular matrices
+E = [1 2;3 4;5 6]
+[Q1,R1] = qr(E)
+%% Galleries for testing
+%Sometimes we desire to test something on a bunch of matrices of a certain
+%type. the gallery() function can do this
+
+A1 = gallery('jordbloc', 3, 2)%So I can generate Jordan Blocks and then insert them if needed.
+A2 = gallery('minij',n)%I can also generate a symmetric positive definite matrix
+##### SOURCE END #####
+--></body></html>
