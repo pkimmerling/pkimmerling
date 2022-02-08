@@ -6,3 +6,5 @@ mort=hwdata$mortality
 fit=lm(lead~mort)
 fit
 summary(fit)
+#Visualize the things
+plot(lead,mort)
