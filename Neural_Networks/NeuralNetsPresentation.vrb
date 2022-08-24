@@ -1,0 +1,13 @@
+\frametitle{Fit to Train Data}
+		It trained to fit the data perfectly in this case, because the `score' attribute of the classifier gives an average percentage accuracy.
+		\begin{lstlisting}
+		pred = clf.predict(trainX)
+		clf.score(trainX,trainY)
+		\end{lstlisting}
+		\texttt{1.0} = $100$\%\\
+		It also didn't do too badly on the testing data:
+		\begin{lstlisting}
+		pred = clf.predict(testX)
+		clf.score(testX,testY)
+		\end{lstlisting}
+		\texttt{0.8276} = $82.76$\%
